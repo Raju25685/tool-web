@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remove Background - Working Tool | Tools Bathinda</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #2563eb;
+            --dark-blue: #1e40af;
+            --light-blue: #3b82f6;
+            --gradient-blue: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            --gradient-green: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-purple: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            --background-light: #f8fafc;
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            box-shadow: var(--shadow-md);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 2rem;
+        }
+
+        .back-btn {
+            background: var(--gradient-blue);
+            color: white;
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Main Tool */
+        .tool-wrapper {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            margin: 30px auto;
+            overflow: hidden;
+            max-width: 1000px;
+        }
+
+        .tool-header {
+            background: var(--gradient-blue);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .tool-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .tool-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .tool-content {
+            padding: 40px;
+        }
+
+        /* Upload Area */
+        .upload-area {
+            border: 3px dashed #cbd5e1;
+            border-radius: var(--radius-lg);
+            padding: 50px 30px;
+            text-align: center;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 30px;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-blue);
+            background: #f0f9ff;
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary-blue);
+            background: #e0f2fe;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+        }
+
+        .upload-text h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .upload-text p {
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        .upload-btn {
+            background: var(--gradient-blue);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        /* Preview Area */
+        .preview-area {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .preview-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .preview-header h2 {
+            font-size: 2rem;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+        }
+
+        .preview-container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .preview-box {
+            flex: 1;
+            min-width: 300px;
+            max-width: 450px;
+        }
+
+        .preview-label {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+            display: block;
+        }
+
+        .preview-image {
+            width: 100%;
+            height: 300px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            background: #f1f5f9;
+            position: relative;
+        }
+
+        .preview-image canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .original .preview-image::after {
+            content: 'Original';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .result .preview-image::after {
+            content: 'Background Removed';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--gradient-green);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Controls */
+        .controls {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .controls h3 {
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .control-btn {
+            background: white;
+            border: 2px solid #e2e8f0;
+            padding: 12px 25px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-btn:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .control-btn.primary {
+            background: var(--gradient-blue);
+            color: white;
+            border: none;
+        }
+
+        /* Background Options */
+        .background-options {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .bg-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: var(--transition);
+        }
+
+        .bg-option:hover {
+            transform: scale(1.1);
+        }
+
+        .bg-option.active {
+            border-color: var(--primary-blue);
+        }
+
+        .bg-transparent {
+            background: 
+                linear-gradient(45deg, #ccc 25%, transparent 25%),
+                linear-gradient(-45deg, #ccc 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #ccc 75%),
+                linear-gradient(-45deg, transparent 75%, #ccc 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+
+        .bg-white { background: white; border: 1px solid #e2e8f0; }
+        .bg-black { background: #1e293b; }
+        .bg-blue { background: var(--gradient-blue); }
+        .bg-green { background: var(--gradient-green); }
+
+        /* Processing Animation */
+        .processing {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .processing i {
+            font-size: 3rem;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+        }
+
+        .processing h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .processing p {
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress {
+            height: 100%;
+            background: var(--gradient-blue);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Footer */
+        .footer {
+            background: #0f172a;
+            color: white;
+            padding: 40px 0;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .copyright {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .preview-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .preview-box {
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            .control-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .control-btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+            
+            .tool-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-content">
+            <a href="index.html" class="logo">
+                <i class="fas fa-tools"></i>
+                <span>Tools Bathinda</span>
+            </a>
+            <a href="index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to Tools</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Tool -->
+    <div class="container">
+        <div class="tool-wrapper">
+            <div class="tool-header">
+                <h1>Remove Background</h1>
+                <p>Upload an image and remove its background instantly</p>
+            </div>
+            
+            <div class="tool-content">
+                <!-- Upload Area -->
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div class="upload-text">
+                        <h3>Drop your image here</h3>
+                        <p>or click to browse files</p>
+                        <button class="upload-btn" id="uploadButton">
+                            <i class="fas fa-folder-open"></i> Select Image
+                        </button>
+                        <input type="file" id="fileInput" accept="image/*">
+                    </div>
+                </div>
+
+                <!-- Processing Animation -->
+                <div class="processing" id="processing">
+                    <i class="fas fa-robot"></i>
+                    <h3>AI is removing background...</h3>
+                    <p>Please wait while we process your image</p>
+                    <div class="progress-bar">
+                        <div class="progress" id="progress"></div>
+                    </div>
+                </div>
+
+                <!-- Preview Area -->
+                <div class="preview-area" id="previewArea">
+                    <div class="preview-header">
+                        <h2>Background Removed Successfully!</h2>
+                        <p>Download your image or try different backgrounds</p>
+                    </div>
+                    
+                    <div class="preview-container">
+                        <div class="preview-box original">
+                            <span class="preview-label">Original Image</span>
+                            <div class="preview-image">
+                                <canvas id="originalCanvas"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="preview-box result">
+                            <span class="preview-label">Result</span>
+                            <div class="preview-image">
+                                <canvas id="resultCanvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="controls">
+                        <h3>Download Options</h3>
+                        <div class="control-buttons">
+                            <button class="control-btn primary" id="downloadPNG">
+                                <i class="fas fa-download"></i>
+                                Download PNG (Transparent)
+                            </button>
+                            <button class="control-btn" id="downloadJPG">
+                                <i class="fas fa-download"></i>
+                                Download JPG
+                            </button>
+                            <button class="control-btn" id="resetBtn">
+                                <i class="fas fa-redo"></i>
+                                Process Another Image
+                            </button>
+                        </div>
+
+                        <h3>Change Background</h3>
+                        <div class="background-options">
+                            <div class="bg-option bg-transparent active" data-bg="transparent"></div>
+                            <div class="bg-option bg-white" data-bg="white"></div>
+                            <div class="bg-option bg-black" data-bg="black"></div>
+                            <div class="bg-option bg-blue" data-bg="blue"></div>
+                            <div class="bg-option bg-green" data-bg="green"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-tools"></i>
+                    <span>Tools Bathinda</span>
+                </div>
+                <div class="footer-links">
+                    <a href="index.html">Home</a>
+                    <a href="image-converter.html">Image Converter</a>
+                    <a href="image-compressor.html">Image Compressor</a>
+                    <a href="image-to-pdf.html">Image to PDF</a>
+                </div>
+                <div class="copyright">
+                    &copy; 2023 Tools Bathinda. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const uploadArea = document.getElementById('uploadArea');
+        const uploadButton = document.getElementById('uploadButton');
+        const fileInput = document.getElementById('fileInput');
+        const previewArea = document.getElementById('previewArea');
+        const processing = document.getElementById('processing');
+        const progress = document.getElementById('progress');
+        const originalCanvas = document.getElementById('originalCanvas');
+        const resultCanvas = document.getElementById('resultCanvas');
+        const downloadPNG = document.getElementById('downloadPNG');
+        const downloadJPG = document.getElementById('downloadJPG');
+        const resetBtn = document.getElementById('resetBtn');
+        const bgOptions = document.querySelectorAll('.bg-option');
+        
+        // Canvas contexts
+        const originalCtx = originalCanvas.getContext('2d');
+        const resultCtx = resultCanvas.getContext('2d');
+        
+        // Variables
+        let originalImage = null;
+        let processedImageData = null;
+        let currentBackground = 'transparent';
+
+        // Event Listeners
+        uploadButton.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('click', () => fileInput.click());
+        
+        fileInput.addEventListener('change', handleImageUpload);
+        
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                handleImageUpload();
+            }
+        });
+        
+        // Download buttons
+        downloadPNG.addEventListener('click', downloadAsPNG);
+        downloadJPG.addEventListener('click', downloadAsJPG);
+        resetBtn.addEventListener('click', resetTool);
+        
+        // Background options
+        bgOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                bgOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                currentBackground = this.getAttribute('data-bg');
+                applyBackground();
+            });
+        });
+
+        // Functions
+        function handleImageUpload() {
+            if (!fileInput.files.length) return;
+            
+            const file = fileInput.files[0];
+            
+            // Validate file
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file');
+                return;
+            }
+            
+            if (file.size > 10 * 1024 * 1024) {
+                alert('File size should be less than 10MB');
+                return;
+            }
+            
+            // Show processing
+            uploadArea.style.display = 'none';
+            processing.style.display = 'block';
+            
+            // Simulate processing with progress bar
+            simulateProcessing(() => {
+                // Load and process image
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    originalImage = new Image();
+                    originalImage.onload = function() {
+                        // Set canvas dimensions
+                        const maxWidth = 450;
+                        const maxHeight = 300;
+                        let width = originalImage.width;
+                        let height = originalImage.height;
+                        
+                        // Calculate new dimensions maintaining aspect ratio
+                        if (width > maxWidth) {
+                            height = (maxWidth / width) * height;
+                            width = maxWidth;
+                        }
+                        if (height > maxHeight) {
+                            width = (maxHeight / height) * width;
+                            height = maxHeight;
+                        }
+                        
+                        originalCanvas.width = width;
+                        originalCanvas.height = height;
+                        resultCanvas.width = width;
+                        resultCanvas.height = height;
+                        
+                        // Draw original image
+                        originalCtx.drawImage(originalImage, 0, 0, width, height);
+                        
+                        // Process image (simulate background removal)
+                        processImage();
+                        
+                        // Hide processing, show results
+                        processing.style.display = 'none';
+                        previewArea.style.display = 'block';
+                    };
+                    originalImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function simulateProcessing(callback) {
+            let width = 0;
+            const interval = setInterval(() => {
+                width += Math.random() * 20;
+                if (width > 100) {
+                    width = 100;
+                    clearInterval(interval);
+                    setTimeout(callback, 300);
+                }
+                progress.style.width = width + '%';
+            }, 100);
+        }
+
+        function processImage() {
+            // Get image data from original canvas
+            const imageData = originalCtx.getImageData(0, 0, originalCanvas.width, originalCanvas.height);
+            const data = imageData.data;
+            
+            // Store processed data
+            processedImageData = new ImageData(
+                new Uint8ClampedArray(data),
+                imageData.width,
+                imageData.height
+            );
+            
+            // Apply initial background removal (simulated)
+            applyBackgroundRemoval();
+            applyBackground();
+        }
+
+        function applyBackgroundRemoval() {
+            // This simulates background removal
+            // In a real app, you would use AI/ML algorithms here
+            
+            const width = originalCanvas.width;
+            const height = originalCanvas.height;
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            tempCanvas.width = width;
+            tempCanvas.height = height;
+            
+            // Copy original image
+            tempCtx.drawImage(originalImage, 0, 0, width, height);
+            
+            // Get image data
+            const imageData = tempCtx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+            
+            // Simple background removal simulation
+            // This is a basic algorithm - real AI would be much more sophisticated
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+                
+                // Detect green screen-like background (for demo)
+                // In reality, you'd use more complex algorithms
+                const isBackground = (
+                    (g > r * 1.2 && g > b * 1.2) || // Greenish
+                    (r > 200 && g > 200 && b > 200) || // Very light
+                    (r < 50 && g < 50 && b < 50) // Very dark
+                );
+                
+                if (isBackground) {
+                    // Make pixel transparent
+                    data[i + 3] = 0;
+                }
+            }
+            
+            // Store the processed data
+            tempCtx.putImageData(imageData, 0, 0);
+            processedImageData = tempCtx.getImageData(0, 0, width, height);
+        }
+
+        function applyBackground() {
+            if (!processedImageData) return;
+            
+            // Clear result canvas
+            resultCtx.clearRect(0, 0, resultCanvas.width, resultCanvas.height);
+            
+            // Apply background color
+            switch(currentBackground) {
+                case 'transparent':
+                    // Checkerboard pattern for transparency
+                    const size = 20;
+                    for (let y = 0; y < resultCanvas.height; y += size) {
+                        for (let x = 0; x < resultCanvas.width; x += size) {
+                            resultCtx.fillStyle = ((x + y) % (size * 2) === 0) ? '#f0f0f0' : '#ffffff';
+                            resultCtx.fillRect(x, y, size, size);
+                        }
+                    }
+                    break;
+                case 'white':
+                    resultCtx.fillStyle = 'white';
+                    resultCtx.fillRect(0, 0, resultCanvas.width, resultCanvas.height);
+                    break;
+                case 'black':
+                    resultCtx.fillStyle = 'black';
+                    resultCtx.fillRect(0, 0, resultCanvas.width, resultCanvas.height);
+                    break;
+                case 'blue':
+                    const blueGradient = resultCtx.createLinearGradient(0, 0, resultCanvas.width, resultCanvas.height);
+                    blueGradient.addColorStop(0, '#2563eb');
+                    blueGradient.addColorStop(1, '#1d4ed8');
+                    resultCtx.fillStyle = blueGradient;
+                    resultCtx.fillRect(0, 0, resultCanvas.width, resultCanvas.height);
+                    break;
+                case 'green':
+                    const greenGradient = resultCtx.createLinearGradient(0, 0, resultCanvas.width, resultCanvas.height);
+                    greenGradient.addColorStop(0, '#10b981');
+                    greenGradient.addColorStop(1, '#059669');
+                    resultCtx.fillStyle = greenGradient;
+                    resultCtx.fillRect(0, 0, resultCanvas.width, resultCanvas.height);
+                    break;
+            }
+            
+            // Draw processed image on top
+            resultCtx.putImageData(processedImageData, 0, 0);
+        }
+
+        function downloadAsPNG() {
+            if (!processedImageData) return;
+            
+            // Create temporary canvas for download
+            const downloadCanvas = document.createElement('canvas');
+            downloadCanvas.width = resultCanvas.width;
+            downloadCanvas.height = resultCanvas.height;
+            const downloadCtx = downloadCanvas.getContext('2d');
+            
+            // Draw with transparent background
+            downloadCtx.putImageData(processedImageData, 0, 0);
+            
+            // Create download link
+            const link = document.createElement('a');
+            link.download = 'background-removed.png';
+            link.href = downloadCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadAsJPG() {
+            if (!processedImageData) return;
+            
+            // Create temporary canvas for download
+            const downloadCanvas = document.createElement('canvas');
+            downloadCanvas.width = resultCanvas.width;
+            downloadCanvas.height = resultCanvas.height;
+            const downloadCtx = downloadCanvas.getContext('2d');
+            
+            // Apply white background for JPG
+            downloadCtx.fillStyle = 'white';
+            downloadCtx.fillRect(0, 0, downloadCanvas.width, downloadCanvas.height);
+            
+            // Draw processed image
+            downloadCtx.putImageData(processedImageData, 0, 0);
+            
+            // Create download link
+            const link = document.createElement('a');
+            link.download = 'background-removed.jpg';
+            link.href = downloadCanvas.toDataURL('image/jpeg', 0.9);
+            link.click();
+        }
+
+        function resetTool() {
+            // Reset everything
+            fileInput.value = '';
+            uploadArea.style.display = 'block';
+            previewArea.style.display = 'none';
+            processing.style.display = 'none';
+            progress.style.width = '0%';
+            
+            // Clear canvases
+            originalCtx.clearRect(0, 0, originalCanvas.width, originalCanvas.height);
+            resultCtx.clearRect(0, 0, resultCanvas.width, resultCanvas.height);
+            
+            // Reset background option
+            bgOptions.forEach(opt => opt.classList.remove('active'));
+            document.querySelector('.bg-transparent').classList.add('active');
+            currentBackground = 'transparent';
+            
+            originalImage = null;
+            processedImageData = null;
+        }
+
+        // Initialize with sample image for demo
+        window.addEventListener('load', function() {
+            // Create a sample image for demonstration
+            const sampleCanvas = document.createElement('canvas');
+            sampleCanvas.width = 400;
+            sampleCanvas.height = 300;
+            const sampleCtx = sampleCanvas.getContext('2d');
+            
+            // Draw a sample image with simple background
+            sampleCtx.fillStyle = '#4ade80'; // Green background
+            sampleCtx.fillRect(0, 0, 400, 300);
+            
+            // Draw a sample object (a person shape)
+            sampleCtx.fillStyle = '#fbbf24';
+            sampleCtx.beginPath();
+            sampleCtx.arc(200, 100, 50, 0, Math.PI * 2); // Head
+            sampleCtx.fill();
+            
+            sampleCtx.fillStyle = '#3b82f6';
+            sampleCtx.fillRect(150, 150, 100, 100); // Body
+            
+            sampleCtx.fillStyle = '#ef4444';
+            sampleCtx.beginPath();
+            sampleCtx.ellipse(130, 130, 20, 30, 0, 0, Math.PI * 2); // Left arm
+            sampleCtx.ellipse(270, 130, 20, 30, 0, 0, Math.PI * 2); // Right arm
+            sampleCtx.fill();
+            
+            // Convert to data URL
+            const sampleDataURL = sampleCanvas.toDataURL('image/png');
+            
+            // Pre-fill the file input with sample data for demo
+            // Note: In a real scenario, you would let users upload their own images
+            console.log('Demo ready. Upload an image to test the tool.');
+        });
+    </script>
+</body>
+</html>

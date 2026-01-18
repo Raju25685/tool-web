@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Advanced Image Editor</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      color: #333;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(to right, #007bff, #0056b3);
+      color: white;
+      padding: 25px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      opacity: 0.9;
+      font-size: 1.1rem;
+    }
+
+    .main-content {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 20px;
+    }
+
+    .upload-section {
+      flex: 1;
+      min-width: 300px;
+      padding: 20px;
+      border-right: 1px solid #eee;
+    }
+
+    .upload-area {
+      border: 3px dashed #007bff;
+      border-radius: 10px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      background-color: #f8f9fa;
+      margin-bottom: 20px;
+    }
+
+    .upload-area:hover {
+      background-color: #e9f4ff;
+      border-color: #0056b3;
+    }
+
+    .upload-area i {
+      font-size: 3rem;
+      color: #007bff;
+      margin-bottom: 15px;
+    }
+
+    .upload-area h3 {
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    #image-upload {
+      display: none;
+    }
+
+    .preview-section {
+      flex: 2;
+      min-width: 400px;
+      padding: 20px;
+    }
+
+    .preview-container {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      background: #f8f9fa;
+      min-height: 300px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #image-preview {
+      max-width: 100%;
+      max-height: 300px;
+      transition: transform 0.5s ease;
+      display: block;
+    }
+
+    .placeholder-text {
+      color: #888;
+      font-size: 1.2rem;
+    }
+
+    .controls-section {
+      padding: 20px;
+      background-color: #f8f9fa;
+      border-top: 1px solid #eee;
+    }
+
+    .controls-title {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      color: #0056b3;
+    }
+
+    .controls-title i {
+      margin-right: 10px;
+      font-size: 1.5rem;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .control-group {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .control-group h4 {
+      margin-bottom: 12px;
+      color: #333;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 8px;
+    }
+
+    .control-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .control-btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex: 1;
+      min-width: 80px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .control-btn i {
+      margin-right: 5px;
+    }
+
+    .control-btn:hover {
+      background-color: #0056b3;
+      transform: translateY(-2px);
+    }
+
+    .control-btn:active {
+      transform: translateY(0);
+    }
+
+    .angle-control {
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .angle-control input {
+      flex: 1;
+      margin: 0 10px;
+    }
+
+    #rotation-value {
+      min-width: 40px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .info-display {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+    }
+
+    .info-item i {
+      margin-right: 5px;
+      color: #007bff;
+    }
+
+    .download-section {
+      padding: 20px;
+      text-align: center;
+      border-top: 1px solid #eee;
+    }
+
+    #download-btn {
+      background: linear-gradient(to right, #28a745, #218838);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      display: inline-flex;
+      align-items: center;
+      transition: all 0.3s;
+      box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+    }
+
+    #download-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(40, 167, 69, 0.4);
+    }
+
+    #download-btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    #download-btn i {
+      margin-right: 10px;
+    }
+
+    .reset-btn {
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-left: 15px;
+    }
+
+    .reset-btn:hover {
+      background-color: #5a6268;
+    }
+
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #28a745;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      display: none;
+      z-index: 1000;
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        flex-direction: column;
+      }
+      
+      .upload-section {
+        border-right: none;
+        border-bottom: 1px solid #eee;
+      }
+      
+      .controls {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><i class="fas fa-image"></i> Advanced Image Editor</h1>
+      <p>Rotate, flip, and edit your images with ease</p>
+    </header>
+
+    <div class="main-content">
+      <div class="upload-section">
+        <div class="upload-area" id="upload-area">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <h3>Upload Your Image</h3>
+          <p>Click or drag and drop your image here</p>
+          <p>Supported formats: JPG, PNG, GIF, WEBP</p>
+          <input type="file" id="image-upload" accept="image/*">
+        </div>
+        
+        <div class="info-display">
+          <div class="info-item">
+            <i class="fas fa-arrows-alt-h"></i>
+            <span id="dimensions">Dimensions: -</span>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-weight-hanging"></i>
+            <span id="file-size">Size: -</span>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-sync-alt"></i>
+            <span id="rotation-info">Rotation: 0°</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="preview-section">
+        <h3>Image Preview</h3>
+        <div class="preview-container">
+          <img id="image-preview" src="" alt="Image Preview">
+          <div id="placeholder" class="placeholder-text">
+            <i class="fas fa-image"></i>
+            <p>Your image will appear here</p>
+          </div>
+        </div>
+        
+        <div class="controls-section">
+          <div class="controls-title">
+            <i class="fas fa-sliders-h"></i>
+            <h3>Editing Controls</h3>
+          </div>
+          
+          <div class="controls">
+            <div class="control-group">
+              <h4>Rotation</h4>
+              <div class="control-buttons">
+                <button class="control-btn" id="rotate-left">
+                  <i class="fas fa-undo"></i> Rotate Left
+                </button>
+                <button class="control-btn" id="rotate-right">
+                  <i class="fas fa-redo"></i> Rotate Right
+                </button>
+              </div>
+              <div class="angle-control">
+                <span>-180°</span>
+                <input type="range" id="rotation-slider" min="-180" max="180" value="0" step="1">
+                <span>180°</span>
+                <span id="rotation-value">0°</span>
+              </div>
+            </div>
+            
+            <div class="control-group">
+              <h4>Flip & Mirror</h4>
+              <div class="control-buttons">
+                <button class="control-btn" id="flip-horizontal">
+                  <i class="fas fa-arrows-alt-h"></i> Flip Horizontal
+                </button>
+                <button class="control-btn" id="flip-vertical">
+                  <i class="fas fa-arrows-alt-v"></i> Flip Vertical
+                </button>
+              </div>
+              <div class="control-buttons" style="margin-top: 10px;">
+                <button class="control-btn" id="mirror-horizontal">
+                  <i class="fas fa-exchange-alt"></i> Mirror Horizontal
+                </button>
+                <button class="control-btn" id="mirror-vertical">
+                  <i class="fas fa-exchange-alt"></i> Mirror Vertical
+                </button>
+              </div>
+            </div>
+            
+            <div class="control-group">
+              <h4>Reset & Presets</h4>
+              <div class="control-buttons">
+                <button class="control-btn" id="reset-all">
+                  <i class="fas fa-history"></i> Reset All
+                </button>
+                <button class="control-btn" id="preset-90">
+                  <i class="fas fa-rotate-right"></i> 90°
+                </button>
+              </div>
+              <div class="control-buttons" style="margin-top: 10px;">
+                <button class="control-btn" id="preset-180">
+                  <i class="fas fa-sync"></i> 180°
+                </button>
+                <button class="control-btn" id="preset-270">
+                  <i class="fas fa-rotate-left"></i> 270°
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="download-section">
+      <button id="download-btn" disabled>
+        <i class="fas fa-download"></i> Download Edited Image
+      </button>
+      <button class="reset-btn" id="reset-image">
+        <i class="fas fa-trash-alt"></i> Clear Image
+      </button>
+    </div>
+  </div>
+
+  <div class="notification" id="notification">
+    <i class="fas fa-check-circle"></i> Image downloaded successfully!
+  </div>
+
+  <script>
+    // DOM Elements
+    const imagePreview = document.getElementById('image-preview');
+    const placeholder = document.getElementById('placeholder');
+    const imageUpload = document.getElementById('image-upload');
+    const uploadArea = document.getElementById('upload-area');
+    const rotateLeftBtn = document.getElementById('rotate-left');
+    const rotateRightBtn = document.getElementById('rotate-right');
+    const flipHorizontalBtn = document.getElementById('flip-horizontal');
+    const flipVerticalBtn = document.getElementById('flip-vertical');
+    const mirrorHorizontalBtn = document.getElementById('mirror-horizontal');
+    const mirrorVerticalBtn = document.getElementById('mirror-vertical');
+    const resetAllBtn = document.getElementById('reset-all');
+    const resetImageBtn = document.getElementById('reset-image');
+    const downloadBtn = document.getElementById('download-btn');
+    const rotationSlider = document.getElementById('rotation-slider');
+    const rotationValue = document.getElementById('rotation-value');
+    const rotationInfo = document.getElementById('rotation-info');
+    const dimensionsInfo = document.getElementById('dimensions');
+    const fileSizeInfo = document.getElementById('file-size');
+    const preset90Btn = document.getElementById('preset-90');
+    const preset180Btn = document.getElementById('preset-180');
+    const preset270Btn = document.getElementById('preset-270');
+    const notification = document.getElementById('notification');
+
+    // State variables
+    let rotation = 0;
+    let scaleX = 1;
+    let scaleY = 1;
+    let originalImageData = null;
+    let originalImageUrl = null;
+    let fileName = "edited_image.jpg";
+
+    // Event Listeners
+    uploadArea.addEventListener('click', () => imageUpload.click());
+    
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.style.backgroundColor = '#e9f4ff';
+      uploadArea.style.borderColor = '#0056b3';
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.style.backgroundColor = '#f8f9fa';
+      uploadArea.style.borderColor = '#007bff';
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.style.backgroundColor = '#f8f9fa';
+      uploadArea.style.borderColor = '#007bff';
+      
+      if (e.dataTransfer.files.length) {
+        imageUpload.files = e.dataTransfer.files;
+        handleImageUpload(e.dataTransfer.files[0]);
+      }
+    });
+
+    imageUpload.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (file) handleImageUpload(file);
+    });
+
+    rotateLeftBtn.addEventListener('click', () => {
+      rotation -= 90;
+      updateRotationControls();
+      updateImage();
+    });
+
+    rotateRightBtn.addEventListener('click', () => {
+      rotation += 90;
+      updateRotationControls();
+      updateImage();
+    });
+
+    flipHorizontalBtn.addEventListener('click', () => {
+      scaleX *= -1;
+      updateImage();
+    });
+
+    flipVerticalBtn.addEventListener('click', () => {
+      scaleY *= -1;
+      updateImage();
+    });
+
+    mirrorHorizontalBtn.addEventListener('click', () => {
+      scaleX *= -1;
+      scaleY *= -1;
+      updateImage();
+    });
+
+    mirrorVerticalBtn.addEventListener('click', () => {
+      scaleX *= -1;
+      scaleY *= -1;
+      rotation += 180;
+      updateRotationControls();
+      updateImage();
+    });
+
+    resetAllBtn.addEventListener('click', () => {
+      rotation = 0;
+      scaleX = 1;
+      scaleY = 1;
+      updateRotationControls();
+      updateImage();
+    });
+
+    resetImageBtn.addEventListener('click', () => {
+      imagePreview.src = '';
+      placeholder.style.display = 'block';
+      downloadBtn.disabled = true;
+      dimensionsInfo.textContent = 'Dimensions: -';
+      fileSizeInfo.textContent = 'Size: -';
+      rotationInfo.textContent = 'Rotation: 0°';
+    });
+
+    rotationSlider.addEventListener('input', () => {
+      rotation = parseInt(rotationSlider.value);
+      updateRotationControls();
+      updateImage();
+    });
+
+    preset90Btn.addEventListener('click', () => {
+      rotation = 90;
+      updateRotationControls();
+      updateImage();
+    });
+
+    preset180Btn.addEventListener('click', () => {
+      rotation = 180;
+      updateRotationControls();
+      updateImage();
+    });
+
+    preset270Btn.addEventListener('click', () => {
+      rotation = 270;
+      updateRotationControls();
+      updateImage();
+    });
+
+    downloadBtn.addEventListener('click', downloadImage);
+
+    // Functions
+    function handleImageUpload(file) {
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        originalImageUrl = e.target.result;
+        originalImageData = file;
+        fileName = file.name || "edited_image.jpg";
+        
+        imagePreview.src = originalImageUrl;
+        placeholder.style.display = 'none';
+        downloadBtn.disabled = false;
+        
+        // Get image dimensions
+        const img = new Image();
+        img.onload = function() {
+          dimensionsInfo.textContent = `Dimensions: ${img.width} × ${img.height}`;
+          fileSizeInfo.textContent = `Size: ${formatFileSize(file.size)}`;
+        };
+        img.src = originalImageUrl;
+        
+        // Reset transformations
+        rotation = 0;
+        scaleX = 1;
+        scaleY = 1;
+        updateRotationControls();
+        updateImage();
+      };
+      
+      reader.readAsDataURL(file);
+    }
+
+    function updateRotationControls() {
+      // Normalize rotation to be between -180 and 180
+      rotation = ((rotation + 180) % 360) - 180;
+      rotationSlider.value = rotation;
+      rotationValue.textContent = `${rotation}°`;
+      rotationInfo.textContent = `Rotation: ${rotation}°`;
+    }
+
+    function updateImage() {
+      imagePreview.style.transform = `rotate(${rotation}deg) scaleX(${scaleX}) scaleY(${scaleY})`;
+    }
+
+    function downloadImage() {
+      if (!originalImageUrl) return;
+      
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      img.onload = function() {
+        // Calculate canvas size based on rotation
+        let width = img.width;
+        let height = img.height;
+        
+        // Adjust for rotation
+        if (rotation % 180 !== 0) {
+          canvas.width = height;
+          canvas.height = width;
+        } else {
+          canvas.width = width;
+          canvas.height = height;
+        }
+        
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Translate to center
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        
+        // Apply rotation
+        ctx.rotate(rotation * Math.PI / 180);
+        
+        // Apply scaling (flip)
+        ctx.scale(scaleX, scaleY);
+        
+        // Draw image
+        ctx.drawImage(img, -width / 2, -height / 2, width, height);
+        
+        // Create download link
+        const link = document.createElement('a');
+        link.download = `edited_${fileName}`;
+        link.href = canvas.toDataURL('image/jpeg', 0.9);
+        link.click();
+        
+        // Show notification
+        showNotification('Image downloaded successfully!');
+      };
+      
+      img.src = originalImageUrl;
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' bytes';
+      else if (bytes < 1048576) return (bytes / 1024).toFixed(2) + ' KB';
+      else return (bytes / 1048576).toFixed(2) + ' MB';
+    }
+
+    function showNotification(message) {
+      notification.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+      notification.style.display = 'block';
+      notification.style.backgroundColor = '#28a745';
+      
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 3000);
+    }
+
+    // Initialize
+    updateRotationControls();
+  </script>
+</body>
+</html>
